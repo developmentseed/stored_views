@@ -1,0 +1,109 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_schema().
+ */
+function stored_views_schema() {
+  $schema['stored_views'] = array(
+    'description' => 'Stored page views.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary id for a stored view.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'created' => array(
+        'description' => 'The Unix timestamp when the stored view was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Page title of the view.',
+      ),
+      'view' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'View name.',
+      ),
+      'display' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Display name.',
+      ),
+      'path' => array( 
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Path of the view including query arguments.',
+      ),
+      'arguments' => array( 
+        'type' => 'text',
+        'not null' => FALSE,
+        'serialize' => TRUE,
+        'description' => 'Arguments.',
+      ),
+      'filters' => array( 
+        'type' => 'text',
+        'not null' => FALSE,
+        'serialize' => TRUE,
+        'description' => 'Filters.',
+      ),
+      'status' => array( 
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Status (promoted, not promoted).',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'created' => array('created'),
+      'status' => array('status'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function stored_views_install() {
+  // Create tables.
+  drupal_install_schema('stored_views');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function stored_views_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('stored_views');
+}
+
+/**
+ * Add status col.
+ */
+function stored_views_update_6001() {
+  $ret = array();
+  $spec = array( 
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'Status (promoted, not promoted).',
+  );
+  db_add_field($ret, 'stored_views', 'status', $spec);
+  db_add_index($ret, 'stored_views', 'status', array('status'));
+  return $ret;
+}

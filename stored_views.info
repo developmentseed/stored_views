@@ -1,0 +1,4 @@
+name = Stored views
+description = Save a view and its arguments for later display.
+dependencies[] = views
+core = 6.x
